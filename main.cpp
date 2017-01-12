@@ -1,17 +1,18 @@
 #include <iostream>
 #include <stdlib.h>
-#include  <ctime>
+#include <ctime>
 #include <conio.h>
 #include <windows.h>
+#include <stdio.h>
 
 using namespace std;
 bool GameOver;
 int bonusX, bonusY; 
-const int width = 20;
+const int width = 25;
 const int height = 15;
-int x, y;// snake position
+int x, y, AIx, AIy;// snake position
 int fruitX, fruitY;// fruit position
-int score,l;
+int score,score1,score2,score3,l;
 int coadaX[100], coadaY[100], ncoada;
 enum directii { 
 STOP = 0, LEFT, RIGHT, UP, DOWN 
@@ -27,16 +28,18 @@ void Setup()
 	fruitY = rand() % (height);
 	bonusX = rand() % (width);
 	bonusY = rand() % (height);
-	score = 0;
+	//score = 0;
+	ncoada = -1;
 	l = 50;
 }
 
 void Draw()
 {
 	
-		
+	
 	//first we need to clear the screen
 	system("cls");//claer console window
+	
 	cout << char(201);
 	for (int j=0; j<width; j++)
 		cout << char(205);
@@ -52,9 +55,10 @@ void Draw()
 				cout << "O";
 			else
 				if (i == fruitY&&j == fruitX)
-					cout << "F";
+					
+					cout <<char(232);
 				else
-					if (i == bonusY&&j == bonusX&&score>=20&&(score%3==0||score%7==0))
+					if (i == bonusY&&j == bonusX)
 						cout << "B";
 				else
 				{
@@ -97,26 +101,34 @@ void Input()
 			break;
 
 		case 's':
+			if(dir!=UP)
 			dir = DOWN;
 			break;
 
 		case 'd':
+			if(dir!=LEFT)
 			dir = RIGHT;
 			break;
 
 		case 'a':
+			if(dir!=RIGHT)
 			dir = LEFT;
 			break;
 
 		
 
-		case 'x':
+			case 'e':
 			GameOver = 1;
+			break;
+		
+		case 'p':
+			system("pause");
 			break;
 		}
 	}
 
 }
+
 void Logic()
 {
 	
@@ -140,7 +152,10 @@ void Logic()
 		
 		y--;
 		break;
-
+		/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		{
+			y--;
+		}*/
 	case DOWN:
 		y++;
 		break;
@@ -182,7 +197,7 @@ void Logic()
 		fruitX = rand() % width;
 		fruitY = rand() % height;
 		ncoada++;
-		l=l-10;
+		l=l-1;
 	}
 	if (x == bonusX &&y == bonusY)
 	{
@@ -197,22 +212,60 @@ void Logic()
 
 int main()
 {
+	score1 = 0;
+	score2 = 0;
+	score3 = 0;
+	HWND console = GetConsoleWindow();
+	RECT h;
+	GetWindowRect(console, &h);
+	MoveWindow(console, h.bottom, h.top, 250, 420, TRUE);
+	system("COLOR 2B");
+	int ok=1;
 	srand(time(NULL));
-	RESET:
-	Setup();
-	
-	while (GameOver == 0)
-	{
-		Draw();
-		Input();
-		Logic();
-		Sleep(l);
-		
+	while (ok == 1)
+	{//RESET:
+		Setup();
+		ncoada++;
+		//system("cls");
+		score = 0;
+		while (GameOver == 0)
+		{
+			Draw();
+			Input();
+			Logic();
+			Sleep(l);
+
+		}
+		if (score > score1)
+		{
+			score3 = score2;
+			score2 = score1;
+			score1 = score;
+		}
+		else
+			if (score > score2)
+			{
+				score3 = score2;
+				score2 = score;
+			}
+			else
+				if (score > score3)
+					score3 = score;
+		cout << "1." << score1 << endl;
+		cout << "2." << score2 << endl;
+		cout << "3." << score3 << endl;
+
+		cout << "again?d/n\n";
+		char c;
+		cin >> c;
+		if (c == 'd')
+			ok = 1;
+		else
+		if(c=='n')
+			ok = 0;
+		//goto RESET;
 	}
-	cout << "again?\n";
-	char c;
-	cin >> c;
-	if (c == 'd') goto RESET;
+	
 	return 0;
 }
 
