@@ -7,12 +7,13 @@
 
 using namespace std;
 bool GameOver;
-int bonusX, bonusY; 
+int bonus_scorX, bonus_scorY, bonus_speedX, bonus_speedY, bonus_dimX, bonus_dimY; 
 const int width = 25;
 const int height = 15;
 int x, y, AIx, AIy;// snake position
 int fruitX, fruitY;// fruit position
-int score,score1,score2,score3,l;
+long score, score1, score2, score3;
+int l, aux, c, aux_coada = -1;
 int coadaX[100], coadaY[100], ncoada;
 enum directii { 
 STOP = 0, LEFT, RIGHT, UP, DOWN 
@@ -26,20 +27,27 @@ void Setup()
 	y = height/2;//snake will be centered
 	fruitX = rand() % (width);
 	fruitY = rand() % (height);
-	bonusX = rand() % (width);
-	bonusY = rand() % (height);
+	bonus_scorX = rand() % (width);
+	bonus_scorY = rand() % (height);
+	bonus_speedX = rand() % (width);
+	bonus_speedY = rand() % (height);
+	bonus_dimX = rand() % (width);
+	bonus_dimY = rand() % (height);
 	//score = 0;
 	ncoada = -1;
-	l = 50;
+	l = 51;
 }
 
 void Draw()
 {
-	
-	
-	//first we need to clear the screen
-	system("cls");//claer console window
-	
+	c = l;
+	if (score != 0)
+		aux = score;
+	else
+		aux = 1;
+	system("cls");//clear console window
+	cout << endl;
+	cout << "          Score:" << score<< endl;
 	cout << char(201);
 	for (int j=0; j<width; j++)
 		cout << char(205);
@@ -55,17 +63,25 @@ void Draw()
 				cout << "O";
 			else
 				if (i == fruitY&&j == fruitX)
-					
-					cout <<char(232);
+
+					cout << char(232);
 				else
-					if (i == bonusY&&j == bonusX)
-						cout << "B";
+					if (i == bonus_scorY&&j == bonus_scorX&&aux%160==0)
+						cout << "2";
+					else
+						if (i == bonus_speedY&&j == bonus_speedX&&aux % 35 == 0&&c>1)
+								cout << "S";
+						
+
+						else
+							if (i == bonus_dimY&&j == bonus_dimX&&aux%7==0)
+								cout << "D";
 				else
 				{
 					bool print = 0;
-					for (int l = 0; l<ncoada; l++)
+					for (int k = 0; k<ncoada; k++)
 					{
-						if (coadaX[l] == j&&coadaY[l] == i)
+						if (coadaX[k] == j&&coadaY[k] == i)
 						{
 							cout << "o";
 							print = 1;
@@ -86,7 +102,7 @@ void Draw()
 		cout << char(205);
 	cout << char(188);
 	cout << endl;
-	cout << "Score:" << score << endl;
+	
 }
 void Input()
 {//controls
@@ -152,10 +168,7 @@ void Logic()
 		
 		y--;
 		break;
-		/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-		{
-			y--;
-		}*/
+
 	case DOWN:
 		y++;
 		break;
@@ -171,8 +184,6 @@ void Logic()
 	default:
 		break;
 	}
-	//if(x>width || x<0 || y>height || y<0)
-	//  GameOver=1;
 
 	if (x >= width)
 		x = 0;
@@ -197,17 +208,33 @@ void Logic()
 		fruitX = rand() % width;
 		fruitY = rand() % height;
 		ncoada++;
-		l=l-1;
 	}
-	if (x == bonusX &&y == bonusY)
+	if (x == bonus_scorX &&y == bonus_scorY)
 	{
-		ncoada--;
-		bonusX = rand() % (width);
-		bonusY = rand() % (height);
-		score -= 20;
-		
+		score *= 2;
+		bonus_scorX = rand() % (width);
+		bonus_scorY = rand() % (height);
 	}
 	
+	if (x == bonus_speedX &&y == bonus_speedY)
+	{
+		l -=10;
+		
+		bonus_speedX = rand() % (width);
+		bonus_speedY = rand() % (height);
+		ncoada -= 2;
+		score += 10;
+
+	}
+
+	if (x == bonus_dimX &&y == bonus_dimY)
+	{
+		score += 5;
+		bonus_dimX = rand() % (width);
+		bonus_dimY = rand() % (height);
+		ncoada-=1;
+
+	}
 }
 
 int main()
@@ -218,7 +245,7 @@ int main()
 	HWND console = GetConsoleWindow();
 	RECT h;
 	GetWindowRect(console, &h);
-	MoveWindow(console, h.bottom, h.top, 250, 420, TRUE);
+	MoveWindow(console, h.left, h.top, 390, 470, TRUE);
 	system("COLOR 2B");
 	int ok=1;
 	srand(time(NULL));
@@ -251,11 +278,14 @@ int main()
 			else
 				if (score > score3)
 					score3 = score;
-		cout << "1." << score1 << endl;
-		cout << "2." << score2 << endl;
-		cout << "3." << score3 << endl;
-
-		cout << "again?d/n\n";
+		cout << endl;
+		cout << "        Highscores" << endl;
+		cout << endl;
+		cout << "  1." << score1 << endl;
+		cout << "  2." << score2 << endl;
+		cout << "  3." << score3 << endl;
+		cout << endl;
+		cout << "  again?d/n\n";
 		char c;
 		cin >> c;
 		if (c == 'd')
@@ -267,5 +297,6 @@ int main()
 	}
 	
 	return 0;
+
 }
 
