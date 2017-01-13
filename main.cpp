@@ -10,10 +10,10 @@ bool GameOver;
 int bonus_scorX, bonus_scorY, bonus_speedX, bonus_speedY, bonus_dimX, bonus_dimY; 
 const int width = 25;
 const int height = 15;
-int x, y, AIx, AIy;// snake position
-int fruitX, fruitY;// fruit position
-long score, score1, score2, score3;
-int l, aux, c, aux_coada = -1;
+int x, y, AIx, AIy;
+int fruitX, fruitY;
+int score, score1, score2, score3;
+int l, aux, c, aux_coada = 0;
 int coadaX[100], coadaY[100], ncoada;
 enum directii { 
 STOP = 0, LEFT, RIGHT, UP, DOWN 
@@ -40,14 +40,13 @@ void Setup()
 
 void Draw()
 {
+	
 	c = l;
 	if (score != 0)
 		aux = score;
 	else
 		aux = 1;
 	system("cls");//clear console window
-	cout << endl;
-	cout << "          Score:" << score<< endl;
 	cout << char(201);
 	for (int j=0; j<width; j++)
 		cout << char(205);
@@ -102,7 +101,7 @@ void Draw()
 		cout << char(205);
 	cout << char(188);
 	cout << endl;
-	
+	cout << "          Score:" << score << endl;
 }
 void Input()
 {//controls
@@ -147,11 +146,10 @@ void Input()
 
 void Logic()
 {
-	
 	int prevX = coadaX[0];
 	int prevY = coadaY[0];
 	int auxx, auxy;
-	coadaX[0] = x;//trebuie sa urmareasca capul
+	coadaX[0] = x;
 	coadaY[0] = y;
 	for (int i = 1; i<ncoada; i++)
 	{
@@ -207,26 +205,27 @@ void Logic()
 		score += 10;
 		fruitX = rand() % width;
 		fruitY = rand() % height;
-		ncoada++;
+		aux_coada++;
 	}
+	ncoada = aux_coada;
 	if (x == bonus_scorX &&y == bonus_scorY)
 	{
 		score *= 2;
 		bonus_scorX = rand() % (width);
 		bonus_scorY = rand() % (height);
 	}
-	
+	ncoada = aux_coada;
 	if (x == bonus_speedX &&y == bonus_speedY)
 	{
-		l -=10;
+		l -=5;
 		
 		bonus_speedX = rand() % (width);
 		bonus_speedY = rand() % (height);
-		ncoada -= 2;
+		aux_coada -= 2;
 		score += 10;
 
 	}
-
+	ncoada = aux_coada;
 	if (x == bonus_dimX &&y == bonus_dimY)
 	{
 		score += 5;
@@ -235,6 +234,7 @@ void Logic()
 		ncoada-=1;
 
 	}
+	ncoada = aux_coada;
 }
 
 int main()
@@ -250,10 +250,9 @@ int main()
 	int ok=1;
 	srand(time(NULL));
 	while (ok == 1)
-	{//RESET:
+	{
 		Setup();
 		ncoada++;
-		//system("cls");
 		score = 0;
 		while (GameOver == 0)
 		{
@@ -293,7 +292,7 @@ int main()
 		else
 		if(c=='n')
 			ok = 0;
-		//goto RESET;
+		
 	}
 	
 	return 0;
